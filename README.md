@@ -1,3 +1,12 @@
+# About
+
+1. Create a basic AA on Eth
+2. Create a basic AA on zkSync
+3. Deploy and send a userOp / transaction through them
+    1. not going to send transaction to eth
+    2. but will send transaction to zkSync
+
+
 ## Foundry
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
