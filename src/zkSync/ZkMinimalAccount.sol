@@ -57,6 +57,7 @@ contract ZkMinimalAccount is IAccount, Ownable {
     error ZkMinimalAccount__NotFromBootloaderOrOwner();
     error ZkMinimalAccount_ExecutionFailed();
     error ZkMinimalAccount_FailedToPay();
+    error ZkMinimalAccount__InvalidSignature();
 
     /*/////////////////////////////////////////////////////////////
                          MODIFIERS
@@ -117,7 +118,10 @@ contract ZkMinimalAccount is IAccount, Ownable {
     // They can send it by calling this function
     // so, anybody can call it
     function executeTransactionFromOutside(Transaction memory _transaction) external payable {
-        _validateTransaction(_transaction);
+        bytes4 magic = _validateTransaction(_transaction);
+        if (magic != ACCOUNT_VALIDATION_SUCCESS_MAGIC) {
+            revert ZkMinimalAccount__InvalidSignature();
+        }
         _executeTransaction(_transaction);
     }
 
@@ -158,8 +162,8 @@ contract ZkMinimalAccount is IAccount, Ownable {
         // check the signature & return the "magic" number
         bytes32 txHash = _transaction.encodeHash();
         // (_transaction.signature, txHash)
-        bytes32 convertedHash = MessageHashUtils.toEthSignedMessageHash(txHash);
-        address signer = ECDSA.recover(convertedHash, _transaction.signature);
+        // bytes32 convertedHash = MessageHashUtils.toEthSignedMessageHash(txHash);
+        address signer = ECDSA.recover(txHash, _transaction.signature);
         bool isValidSigner = signer == owner();
         if (isValidSigner) {
             magic = ACCOUNT_VALIDATION_SUCCESS_MAGIC;

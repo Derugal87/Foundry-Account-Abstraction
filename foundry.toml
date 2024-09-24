@@ -11,6 +11,7 @@ remappings = [
 ]
 
 --system-mode = true
+via-ir = true
 
 [[profile.default.build]]
 
